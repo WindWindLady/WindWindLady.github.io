@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>gradientForest R包编译的坑 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="&#8195;&#8195;gradientForest R package作为遗传偏移程度&#x2F;遗传脆弱性分析的老牌工具，虽然深得人心，但是这玩意已经十年没有更新过了。现在在M系列Mac上编译非常费劲，本文仅提供笔者在编译时遇到的困难和解决方法。 前置条件（仅当时编译） R 4.3.0 gcc-13 务必确定好gcc路径，或将其添加到PATH中，后续需要这个路径  默认安装&#8195;&amp;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="gradientForest R包编译的坑">
+<meta property="og:url" content="http://example.com/2025/08/26/gradientForest/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="&#8195;&#8195;gradientForest R package作为遗传偏移程度&#x2F;遗传脆弱性分析的老牌工具，虽然深得人心，但是这玩意已经十年没有更新过了。现在在M系列Mac上编译非常费劲，本文仅提供笔者在编译时遇到的困难和解决方法。 前置条件（仅当时编译） R 4.3.0 gcc-13 务必确定好gcc路径，或将其添加到PATH中，后续需要这个路径  默认安装&#8195;&amp;">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2025-08-26T02:42:36.000Z">
+<meta property="article:modified_time" content="2025-08-26T03:30:53.621Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.2.0/css/fork-awesome.min.css">
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-gradientForest" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2025/08/26/gradientForest/" class="article-date">
+  <time class="dt-published" datetime="2025-08-26T02:42:36.000Z" itemprop="datePublished">2025-08-26</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      gradientForest R包编译的坑
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>&#8195;&#8195;gradientForest R package作为遗传偏移程度&#x2F;遗传脆弱性分析的老牌工具，虽然深得人心，但是这玩意已经十年没有更新过了。现在在M系列Mac上编译非常费劲，本文仅提供笔者在编译时遇到的困难和解决方法。</p>
+<h2 id="前置条件（仅当时编译）"><a href="#前置条件（仅当时编译）" class="headerlink" title="前置条件（仅当时编译）"></a>前置条件（仅当时编译）</h2><ul>
+<li>R 4.3.0</li>
+<li>gcc-13 <strong>务必确定好gcc路径，或将其添加到PATH中，后续需要这个路径</strong></li>
+</ul>
+<h2 id="默认安装"><a href="#默认安装" class="headerlink" title="默认安装"></a>默认安装</h2><p>&#8195;&#8195;在Rstudio中安装gradientForest可以通过 &lt;install.package(‘gradientForest’)&gt; 执行，同时会安装另一个依赖包，到这里都没有问题。 <em><strong>但是！</strong></em>，一旦开始安装本体，程序就因为编译问题而报错，并显示&lt;&#x2F;opt&#x2F;R&#x2F;whatever-the-path-is&#x2F;gfortran : No such file or directory&gt;。</p>
+<p>&#8195;&#8195;这里就是配置问题了。R语言自带的配置文件并不能搜索到已有的 <code>gfortran</code> 编译器，你需要手动指定。这里的配置文件一般是 <code>/Library/Frameworks/R.framework/Versions/your version/Resources/etc/makeconf</code>，然后找到 <code>FC = /opt/R/arm64/bin/gfortran</code>，这个时候将这个路径替换为你已经安装的<code>gfortran</code>路径，并且记得 <code>chmod 777 gfortan</code>来避免权限错误。<br>&#8195;&#8195;同时，在笔者编译的时候还遇到了旗标 <code>-lemutls_w</code> 带来的错误以及动态库报错，分别表现为&lt;warning: search path ‘&#x2F;opt&#x2F;gfortran&#x2F;lib&#x2F;gcc&#x2F;aarch64-apple-darwin20.0&#x2F;12.2.0’ not found&gt;和&lt;library ‘emutls_w’ not found&gt;，经查是依赖库路径不符合，这里需要修改两处路径。第一处为&lt;FLIBS&#x3D; -L&#x2F;opt&#x2F;gfortran&#x2F;lib&#x2F;gcc&#x2F;aarch64-apple-darwin20.0&#x2F;12.2.0&gt;，这里的路径替换为&lt;FLIBS&#x3D; -L&#x2F;opt&#x2F;homebrew&#x2F;Cellar&#x2F;gcc&#x2F;14.2.0_1&#x2F;lib&#x2F;gcc&#x2F;14&gt;即可。<br>&#8195;&#8195;而第二处为 &lt;-L&#x2F;opt&#x2F;homebrew&#x2F;lib&#x2F;gcc&#x2F;14&gt;，这里更加隐蔽，在第一处路径内找到&lt;.&#x2F;gcc&#x2F;aarch64-apple-daewin24&#x2F;gcc&#x2F;14&gt;，并连带替换为&lt;-L&#x2F;opt&#x2F;homebrew&#x2F;Cellar&#x2F;gcc&#x2F;14.2.0_1&#x2F;lib&#x2F;gcc&#x2F;current&#x2F;gcc&#x2F;aarch64-apple-darwin24&#x2F;14&gt;。问题即解决。</p>
+<p>&#8195;&#8195;基本上来说，解决这几个路径问题，编译就可正常进行，目前笔者已经升级在R 4.4.1，并在编写该说明时重新尝试了一番，发现并无报错。但每个人的环境配置都不同，在我这里没有复现的错误，很可能在其他人处就会出现。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2025/08/26/gradientForest/" data-id="cmerzo3s80001m5qefguzddjn" data-title="gradientForest R包编译的坑" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2025/08/26/README/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">自我介绍和环境配置</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/08/">August 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">April 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/10/">October 2023</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2025/08/26/gradientForest/">gradientForest R包编译的坑</a>
+          </li>
+        
+          <li>
+            <a href="/2025/08/26/README/">自我介绍和环境配置</a>
+          </li>
+        
+          <li>
+            <a href="/2024/04/08/Bayescan/">Bayescan在M系Mac上编译问题</a>
+          </li>
+        
+          <li>
+            <a href="/2023/10/23/#%20You'll%20be%20mad%20when%20installing%20R%20packag/">(no title)</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2025 John Doe<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://example.com/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:locale" content="en_US">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.2.0/css/fork-awesome.min.css">
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-gradientForest" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2025/08/26/gradientForest/" class="article-date">
+  <time class="dt-published" datetime="2025-08-26T02:42:36.000Z" itemprop="datePublished">2025-08-26</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2025/08/26/gradientForest/">gradientForest R包编译的坑</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>&#8195;&#8195;gradientForest R package作为遗传偏移程度&#x2F;遗传脆弱性分析的老牌工具，虽然深得人心，但是这玩意已经十年没有更新过了。现在在M系列Mac上编译非常费劲，本文仅提供笔者在编译时遇到的困难和解决方法。</p>
+<h2 id="前置条件（仅当时编译）"><a href="#前置条件（仅当时编译）" class="headerlink" title="前置条件（仅当时编译）"></a>前置条件（仅当时编译）</h2><ul>
+<li>R 4.3.0</li>
+<li>gcc-13 <strong>务必确定好gcc路径，或将其添加到PATH中，后续需要这个路径</strong></li>
+</ul>
+<h2 id="默认安装"><a href="#默认安装" class="headerlink" title="默认安装"></a>默认安装</h2><p>&#8195;&#8195;在Rstudio中安装gradientForest可以通过 &lt;install.package(‘gradientForest’)&gt; 执行，同时会安装另一个依赖包，到这里都没有问题。 <em><strong>但是！</strong></em>，一旦开始安装本体，程序就因为编译问题而报错，并显示&lt;&#x2F;opt&#x2F;R&#x2F;whatever-the-path-is&#x2F;gfortran : No such file or directory&gt;。</p>
+<p>&#8195;&#8195;这里就是配置问题了。R语言自带的配置文件并不能搜索到已有的 <code>gfortran</code> 编译器，你需要手动指定。这里的配置文件一般是 <code>/Library/Frameworks/R.framework/Versions/your version/Resources/etc/makeconf</code>，然后找到 <code>FC = /opt/R/arm64/bin/gfortran</code>，这个时候将这个路径替换为你已经安装的<code>gfortran</code>路径，并且记得 <code>chmod 777 gfortan</code>来避免权限错误。<br>&#8195;&#8195;同时，在笔者编译的时候还遇到了旗标 <code>-lemutls_w</code> 带来的错误以及动态库报错，分别表现为&lt;warning: search path ‘&#x2F;opt&#x2F;gfortran&#x2F;lib&#x2F;gcc&#x2F;aarch64-apple-darwin20.0&#x2F;12.2.0’ not found&gt;和&lt;library ‘emutls_w’ not found&gt;，经查是依赖库路径不符合，这里需要修改两处路径。第一处为&lt;FLIBS&#x3D; -L&#x2F;opt&#x2F;gfortran&#x2F;lib&#x2F;gcc&#x2F;aarch64-apple-darwin20.0&#x2F;12.2.0&gt;，这里的路径替换为&lt;FLIBS&#x3D; -L&#x2F;opt&#x2F;homebrew&#x2F;Cellar&#x2F;gcc&#x2F;14.2.0_1&#x2F;lib&#x2F;gcc&#x2F;14&gt;即可。<br>&#8195;&#8195;而第二处为 &lt;-L&#x2F;opt&#x2F;homebrew&#x2F;lib&#x2F;gcc&#x2F;14&gt;，这里更加隐蔽，在第一处路径内找到&lt;.&#x2F;gcc&#x2F;aarch64-apple-daewin24&#x2F;gcc&#x2F;14&gt;，并连带替换为&lt;-L&#x2F;opt&#x2F;homebrew&#x2F;Cellar&#x2F;gcc&#x2F;14.2.0_1&#x2F;lib&#x2F;gcc&#x2F;current&#x2F;gcc&#x2F;aarch64-apple-darwin24&#x2F;14&gt;。问题即解决。</p>
+<p>&#8195;&#8195;基本上来说，解决这几个路径问题，编译就可正常进行，目前笔者已经升级在R 4.4.1，并在编写该说明时重新尝试了一番，发现并无报错。但每个人的环境配置都不同，在我这里没有复现的错误，很可能在其他人处就会出现。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2025/08/26/gradientForest/" data-id="cmerzo3s80001m5qefguzddjn" data-title="gradientForest R包编译的坑" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-README" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2025/08/26/README/" class="article-date">
+  <time class="dt-published" datetime="2025-08-26T02:26:44.000Z" itemprop="datePublished">2025-08-26</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2025/08/26/README/">自我介绍和环境配置</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>Hi，这里是风风</p>
+<p>  目前我还只是一个研一（2023年）的学生，选了遗传学这个“天坑”。当我一直向往着这个方向的时候，我就已经听说了以后一定会做生物信息学的相关内容和分析了。同时也听说<code>Linux</code>和<code>macOS</code>这些<code>类Unix系统</code>在这方面比较受大家青睐，所以（为了装B）也就选择了一台Mac作为现在的主力机（也是唯一一台。）<br>  不过很明显，这个选择……呃，有失偏颇了吧。<code>Arm64</code>的架构现今在个人计算机上仍然不是一个主流，大部分软件所依赖的运行库还是基于<code>x86</code>的架构。而且就算<code>Rosetta 2</code>在果子上面再强，也压根不能（或者说据我的有限知识所知不能）进行实时的<code>x86-Arm</code>的依赖库转译，从而允许我进行本地编译。</p>
+<p>  不过在这里我想说，这个项目并不是讨论架构之间的好坏的。而是，用之前一定要想好，果子的电脑再好，也有很大的限制。如果你确定你愿意折腾并且乐意折腾，那么你可以 <strong>考虑</strong> ，而不是 <strong>一定可以选择</strong> 果子；否则，<code>x86</code>这个平台仍然是最优解。</p>
+<p>  我会尽自己所能整理出我在这条道上走过的弯路，因为所能查到的资料和教程实在是太零散琐碎了，不是长期做这方面研究的，一来了会很抓瞎。</p>
+<h1 id="有关硬件配置和系统"><a href="#有关硬件配置和系统" class="headerlink" title="有关硬件配置和系统"></a>有关硬件配置和系统</h1>
+        
+          <p class="article-more-link">
+            <a href="/2025/08/26/README/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2025/08/26/README/" data-id="cmerxnw620003sdqecsbed0qa" data-title="自我介绍和环境配置" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-Bayescan" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/04/08/Bayescan/" class="article-date">
+  <time class="dt-published" datetime="2024-04-08T02:16:02.000Z" itemprop="datePublished">2024-04-08</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2024/04/08/Bayescan/">Bayescan在M系Mac上编译问题</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="事情原本没有这么顺利"><a href="#事情原本没有这么顺利" class="headerlink" title="事情原本没有这么顺利"></a>事情原本没有这么顺利</h2><p>因为数据分析的缘故，师姐跟我介绍了Bayescan这款软件。开始的时候，我对其的认知仅仅保留在这是个分析软件，可能会吃掉很多性能，此时我还在窃喜自己的电脑配置总算派上用场了。但是，当我在自己电脑上下载软件并解压缩准备使用时，发现这个软件需要手动编译才能继续使用。本来其实无可厚非，毕竟Bayescan也是一个发布时间比较老的软件了（2014年后再没有新版本），为了兼容、稳妥等起见，只提供源代码进行手动编译还是很正常的。因此我便开始进行调试，但自此开始了一段痛苦的经历。</p>
+<p><strong>软件是从GitHub上直接通过git下载的，不是在官网上下载的zip。Bayescan和后文提到的PGDSpider可以在Windows虚拟机上使用，本文仅阐述如何解决在macOS上解决问题。</strong></p>
+<p>刚开始编译Bayescan的时候，编译会直接报错。</p>
+<p><code>clang: error: unsupported option &#39;-fopenmp&#39;</code></p>
+<p>因为在2023年5月份前后，这台Mac还是很新的状态，没有安装其他的编译器，所以编译的时候本机还处在一个默认的状态，即使用clang作为默认编译器。报错后我上网搜索发现macOS自带的clang不支持，如果软件有这个库的应用，使用<code>gcc</code>编译器更稳妥。所以我就安装了gcc，并且手动修改了Makefile，将’g++’改成了’g++-13’，让系统在编译的时候主动调用gcc的编译器。但是，问题又来了，即使这样修改，依然会出现下述报错。</p>
+<p><code>start.cpp:1181:57: error: reference to &#39;beta&#39; is ambiguous</code></p>
+<p>根据报错内容再一次进行了查询，但是没有很明确的答案。咨询了身边同学后发现，这个错误应该是因为版本不兼容才产生的——因为代码的整体大标准在每个版本之间可能会出现较大幅度的修改，因此可能存在新标准不能向下兼容的问题。当然，其中也不只是gcc的问题，macOS在编译过程中还会调用本地的SDK，我发现这个SDK也会影响到编译，因此再去下载了一些老版本的SDK，版本自OS X 10.9到macOS Big Sur 11.9都有，但是修改后仍然存在报错——</p>
+<p><code>fatal error: AvailabilityInternalLegacy.h: No such file or directory</code></p>
+<p>这个问题在2023年内尚没有解决方法（系统版本仍然处在macOS 13 Ventura中）</p>
+<p>之后一年，我都没有管过这个问题，直到前两天（2024年4月前五天）。</p>
+<h2 id="发生了什么奇怪的事情"><a href="#发生了什么奇怪的事情" class="headerlink" title="发生了什么奇怪的事情"></a>发生了什么奇怪的事情</h2><p>2024年清明节假期，我在家中继续调试这个软件。在我再一次遇到同样的报错后，我再一次上网搜索，发现了有一个类似的报错，即一样出现了<code>No such file or directory</code>，并且给出了一个解决方法</p>
+<p>在rc文件中添加下述两句：<br><code>export CPATH=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/</code><br><code>export LIBRARY_PATH=&quot;$LIBRARY_PATH:/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib&quot;</code></p>
+<p>M系列芯片的Mac默认使用zsh，因此我在.zshrc文件中加入了这两句，并且仍然保留了使用macOS 11.9的SDK的语句，保存、刷新终端后重新make，发现仅有warnings，没有再出现errors，也就说明编译成功了，并且在源文件目录出现了bayescan_2.1这个文件。虽然显示为文稿，但是在终端中仍然可以激活，也就说明程序可以正常运行。之后我使用了手头的示例文件进行测试，程序也可以在 <code>-threads 8</code> 的设置下进行默认计算，用时约2h。</p>
+<p>程序自此编译成功，并且可以正常使用了！</p>
+<h2 id="噩梦还没有结束"><a href="#噩梦还没有结束" class="headerlink" title="噩梦还没有结束"></a>噩梦还没有结束</h2><p>Bayescan是使用专有格式的软件，它需要配套PGDSpider（基于Java编写）才能正常使用。那么，PGDSpider能不能正常用呢？</p>
+<p>很不幸，前一年它仍然无法使用。但是和Bayescan的问题被解决的同一天，它的问题也被解决了。</p>
+<p>我在翻阅PGDSpider文档的时候注意到了其推荐的Java版本为Java 1.8，但是本机上安装的版本为OpenJDK 17。因此，抱着某种小白碰运气的心态，我不断的进行测试，发现不论什么高一点的版本，都没法正常启动PGDSpider。无奈之下只好进行降级，但是这个时候发现，从Java官方下载的Java 8，不会正常安装到正常的路径，即<code>/Library/Java/JavaVirtualMachines</code>，它会安装到<code>Internet Plug-in</code>之下，并且在.zshrc中将该路径添加为PATH后依然无效。所以我删除了所有的可见Java版本，包括OpenJDK与官网安装的Java，找到了一个版本号为 Java 8u202的安装包。</p>
+<p><strong>在这里要指出的是，通过Homebrew是不能安装Java 8的，因为Homebrew上所提供的内容仅供x86架构的Mac进行安装，M系列的Mac进行安装会提示架构不兼容，因此需要手动找安装包。</strong></p>
+<p>安装完成之后，我再次按照说明手册启动PGDSpider，它就可以正常运行了。不过，因为我手头的测试数据点位比较多，有8万余个，因此在进行格式转换的时候会报出内存不足的错误。此时只能关闭软件，在通过命令启动的时候多给Java虚拟机分配内存，我这里分配了16GB（即16384MB）的内存，就可以正常的转格式了，运行速度并无可感知的缓慢或有明显报错。</p>
+<h2 id="总的来说"><a href="#总的来说" class="headerlink" title="总的来说"></a>总的来说</h2><p>现在这两款软件能够很好的运行在我的Mac上！</p>
+<p>如果以后有其他问题，我还是会和这次一样，写好文档作为记录发上来，寄希望于有需要的人能够在数据的汪洋大海中找到它。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2024/04/08/Bayescan/" data-id="cmerzo3s60000m5qe34tn2fw5" data-title="Bayescan在M系Mac上编译问题" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-# You&#39;ll be mad when installing R packag" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2023/10/23/#%20You'll%20be%20mad%20when%20installing%20R%20packag/" class="article-date">
+  <time class="dt-published" datetime="2023-10-23T07:54:31.929Z" itemprop="datePublished">2023-10-23</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1 id="You’ll-be-mad-when-installing-R-package-gradientForest"><a href="#You’ll-be-mad-when-installing-R-package-gradientForest" class="headerlink" title="You’ll be mad when installing R package gradientForest"></a>You’ll be mad when installing R package <code>gradientForest</code></h1><p>To be clear, the title doesn’t mean this package is bad. It just took me a whole day to install it without any useful guidance. So I wanna talk about how to install the package.</p>
+<h2 id="What-You-Nees-for-Installation"><a href="#What-You-Nees-for-Installation" class="headerlink" title="What You Nees for Installation"></a>What You Nees for Installation</h2><p>I recommend to use R under Version 4.3, because I met a error report with version incompatible using R 4.3.1 .<br>This package needs <code>gfortran</code> as the dependency. And <code>gfortran</code> has been included in <code>gcc</code>, so you can just install the <code>gcc</code> through Homebrew. But make sure you can remember the directory of <code>gcc</code>, which will be useful later.</p>
+<h2 id="Start-Installation"><a href="#Start-Installation" class="headerlink" title="Start Installation"></a>Start Installation</h2><p>Now you launch your Rstudio, and type &lt;install.package(‘gradientForest’)&gt;, and it tells you that there’s a dependency package called <code>extendedForest</code>. A <code>Yes</code> is required to proceed the installation program. Then Rstudio starts to download the source code from the Internet and automatically compiles it. But wait! There is an ERROR! It says &lt;&#x2F;opt&#x2F;R&#x2F;whatever-the-path-is&#x2F;gfortran : No such file or directory&gt;. So, what happened?</p>
+<p>Actually you may need to do some configuration about your R <code>makeconf</code> file to point the directory to your <code>gfortran</code>. You can use <code>Command+Shift+G</code> to entry the hidden directory, which usually is <code>/Library/Frameworks/R.framework/Versions/your version/Resources/etc</code>, and you will see the <code>makeconf</code> file. This file can open with notebook easily.<br>Find the <code>FC = /opt/R/arm64/bin/gfortran</code>, now here is the problem. You may notice that in your computer, there is no such thing. So you need to redirect the directory to your own <code>gcc</code> files. For me, the <code>gfortran</code> directory is <code>/opt/homebrew/Cellar/gcc/13.2.0/bin/gfortran</code>. Now be aware that you MUST set the directory till the very end, which is the <code>gfortran</code> shortcut or <code>gfortran-13</code> executable file. And use the command <code>chmod 777 gfortran-13</code> in terminal opened in the <code>bin</code> directory above. After this step, you can restart R and try to install the packages again.</p>
+<h2 id="Functional-Test"><a href="#Functional-Test" class="headerlink" title="Functional Test"></a>Functional Test</h2><p>If you successfully install the packages, now I think you better do a test in case the packages can’t load properly. Maybe you can load them. But for me I met some errors.</p>
+<p>&lt;Library not loaded : @rpath&#x2F;libgfortran.5.dylib&gt;</p>
+<p>And it told me the file <code>extendedForest.so</code> was the one made the error happen. In my Mac, the directory is <code>/Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/library/extendedForest/libs/extendedForest.so</code>. To solve the problem, use command <code>otool -L extendedForest.so</code> to check the <code>@rpath</code> which will be used soon. And you will see the <code>libgfortran.5.dylie</code> is needed. But where is it?<br>Go back to your <code>gcc</code> directory and go to <code>/opt/homebrew/Cellar/gcc/13.2.0/lib/gcc/13</code>, the you will see the <code>libgfortran.5.dylib</code> shortcut. Copy the directory and oopen terminal in the <code>extendedForest.so</code>‘s directory, then type</p>
+<p>&lt;install_name_tool -change @rpath&#x2F;libgfortran.5.dylib &#x2F;your-gcc-libgfortran.5.dylib-path extendedForest.so&gt;</p>
+<p>Hit ENTER and restart R, and it should work. Both <code>extendedForest</code> and <code>gradientForest</code> now can be loaded properly!</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2023/10/23/#%20You'll%20be%20mad%20when%20installing%20R%20packag/" data-id="cmerxnw610001sdqe5q6paoo7" data-title="" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/08/">August 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">April 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/10/">October 2023</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2025/08/26/gradientForest/">gradientForest R包编译的坑</a>
+          </li>
+        
+          <li>
+            <a href="/2025/08/26/README/">自我介绍和环境配置</a>
+          </li>
+        
+          <li>
+            <a href="/2024/04/08/Bayescan/">Bayescan在M系Mac上编译问题</a>
+          </li>
+        
+          <li>
+            <a href="/2023/10/23/#%20You'll%20be%20mad%20when%20installing%20R%20packag/">(no title)</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2025 John Doe<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="You’ll be mad when installing R package gradientForestTo be clear, the title doesn’t mean this package is bad. It just took me a whole day to install it without any useful guidance. So I wanna talk ab">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://example.com/2023/10/23/#%20You'll%20be%20mad%20when%20installing%20R%20packag/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="You’ll be mad when installing R package gradientForestTo be clear, the title doesn’t mean this package is bad. It just took me a whole day to install it without any useful guidance. So I wanna talk ab">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-10-23T07:54:31.929Z">
+<meta property="article:modified_time" content="2023-10-23T07:54:31.949Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.2.0/css/fork-awesome.min.css">
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-# You&#39;ll be mad when installing R packag" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2023/10/23/#%20You'll%20be%20mad%20when%20installing%20R%20packag/" class="article-date">
+  <time class="dt-published" datetime="2023-10-23T07:54:31.929Z" itemprop="datePublished">2023-10-23</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1 id="You’ll-be-mad-when-installing-R-package-gradientForest"><a href="#You’ll-be-mad-when-installing-R-package-gradientForest" class="headerlink" title="You’ll be mad when installing R package gradientForest"></a>You’ll be mad when installing R package <code>gradientForest</code></h1><p>To be clear, the title doesn’t mean this package is bad. It just took me a whole day to install it without any useful guidance. So I wanna talk about how to install the package.</p>
+<h2 id="What-You-Nees-for-Installation"><a href="#What-You-Nees-for-Installation" class="headerlink" title="What You Nees for Installation"></a>What You Nees for Installation</h2><p>I recommend to use R under Version 4.3, because I met a error report with version incompatible using R 4.3.1 .<br>This package needs <code>gfortran</code> as the dependency. And <code>gfortran</code> has been included in <code>gcc</code>, so you can just install the <code>gcc</code> through Homebrew. But make sure you can remember the directory of <code>gcc</code>, which will be useful later.</p>
+<h2 id="Start-Installation"><a href="#Start-Installation" class="headerlink" title="Start Installation"></a>Start Installation</h2><p>Now you launch your Rstudio, and type &lt;install.package(‘gradientForest’)&gt;, and it tells you that there’s a dependency package called <code>extendedForest</code>. A <code>Yes</code> is required to proceed the installation program. Then Rstudio starts to download the source code from the Internet and automatically compiles it. But wait! There is an ERROR! It says &lt;&#x2F;opt&#x2F;R&#x2F;whatever-the-path-is&#x2F;gfortran : No such file or directory&gt;. So, what happened?</p>
+<p>Actually you may need to do some configuration about your R <code>makeconf</code> file to point the directory to your <code>gfortran</code>. You can use <code>Command+Shift+G</code> to entry the hidden directory, which usually is <code>/Library/Frameworks/R.framework/Versions/your version/Resources/etc</code>, and you will see the <code>makeconf</code> file. This file can open with notebook easily.<br>Find the <code>FC = /opt/R/arm64/bin/gfortran</code>, now here is the problem. You may notice that in your computer, there is no such thing. So you need to redirect the directory to your own <code>gcc</code> files. For me, the <code>gfortran</code> directory is <code>/opt/homebrew/Cellar/gcc/13.2.0/bin/gfortran</code>. Now be aware that you MUST set the directory till the very end, which is the <code>gfortran</code> shortcut or <code>gfortran-13</code> executable file. And use the command <code>chmod 777 gfortran-13</code> in terminal opened in the <code>bin</code> directory above. After this step, you can restart R and try to install the packages again.</p>
+<h2 id="Functional-Test"><a href="#Functional-Test" class="headerlink" title="Functional Test"></a>Functional Test</h2><p>If you successfully install the packages, now I think you better do a test in case the packages can’t load properly. Maybe you can load them. But for me I met some errors.</p>
+<p>&lt;Library not loaded : @rpath&#x2F;libgfortran.5.dylib&gt;</p>
+<p>And it told me the file <code>extendedForest.so</code> was the one made the error happen. In my Mac, the directory is <code>/Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/library/extendedForest/libs/extendedForest.so</code>. To solve the problem, use command <code>otool -L extendedForest.so</code> to check the <code>@rpath</code> which will be used soon. And you will see the <code>libgfortran.5.dylie</code> is needed. But where is it?<br>Go back to your <code>gcc</code> directory and go to <code>/opt/homebrew/Cellar/gcc/13.2.0/lib/gcc/13</code>, the you will see the <code>libgfortran.5.dylib</code> shortcut. Copy the directory and oopen terminal in the <code>extendedForest.so</code>‘s directory, then type</p>
+<p>&lt;install_name_tool -change @rpath&#x2F;libgfortran.5.dylib &#x2F;your-gcc-libgfortran.5.dylib-path extendedForest.so&gt;</p>
+<p>Hit ENTER and restart R, and it should work. Both <code>extendedForest</code> and <code>gradientForest</code> now can be loaded properly!</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2023/10/23/#%20You'll%20be%20mad%20when%20installing%20R%20packag/" data-id="cmerxnw610001sdqe5q6paoo7" data-title="" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2024/04/08/Bayescan/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Bayescan在M系Mac上编译问题
+        
+      </div>
+    </a>
+  
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/08/">August 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">April 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/10/">October 2023</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2025/08/26/gradientForest/">gradientForest R包编译的坑</a>
+          </li>
+        
+          <li>
+            <a href="/2025/08/26/README/">自我介绍和环境配置</a>
+          </li>
+        
+          <li>
+            <a href="/2024/04/08/Bayescan/">Bayescan在M系Mac上编译问题</a>
+          </li>
+        
+          <li>
+            <a href="/2023/10/23/#%20You'll%20be%20mad%20when%20installing%20R%20packag/">(no title)</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2025 John Doe<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
